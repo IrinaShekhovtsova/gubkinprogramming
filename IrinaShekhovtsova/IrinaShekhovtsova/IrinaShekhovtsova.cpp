@@ -42,17 +42,39 @@ struct Pipeline
     string ID;
     int dlina;
     int diam;
-    bool remont;
+    bool remont = false;
 };
-struct KompressorStation
+struct Kompressor_Station
 {
     string ID;
     string Name;
-    int plane;
-    int planework;
-    float effect;
+    int plant;
+    int plant_working;
+    float efficiency;
 };
+
+Pipeline Create_Pipe()
+{
+    Pipeline newpipe;
+    cout << "Dlina: ";
+    cin >> newpipe.dlina;
+    cout << "Diametr: ";
+    cin >> newpipe.diam;
+    newpipe.ID = " ";
+    return newpipe;
+}
+
+
 int main()
 {
+    Pipeline pipe1;
+    pipe1 = Create_Pipe();
+    cout << pipe1.dlina;
 
+
+   /* Kompressor_Station newstation;
+    cin >> newstation.Name;
+    cin >> newstation.plant;
+    cin >> newstation.plant_working;
+    cin >> newstation.efficiency; */
 }
