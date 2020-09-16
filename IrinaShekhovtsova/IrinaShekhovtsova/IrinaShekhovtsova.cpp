@@ -36,6 +36,7 @@ int main()
 
 #include <iostream>
 #include <stdlib.h>
+#include <fstream>
 using namespace std;
 struct Pipeline
 {
@@ -64,12 +65,47 @@ Pipeline Create_Pipe()
     return newpipe;
 }
 
+void VivodPipeline(Pipeline newpipe)
+{
+    cout << "Dlina: " << newpipe.dlina << "\n";
+    cout << "Diametr: " << newpipe.diam << "\n";
+}
+
+void ChangeStatus(bool& status)
+{
+    status = !status;
+}
+
+void SaveToFile(Pipeline newpipe)
+{
+    ofstream fout;
+    fout.open("data.txt");
+    fout << newpipe.ID << endl << newpipe.dlina << endl << newpipe.diam << endl << newpipe.remont;
+    fout.close();
+}
+
+Pipeline LoadFile()
+{
+    ifstream fin;
+    fin.open("data.txt");
+    Pipeline newpipe;
+    fin >> newpipe.ID >> newpipe.dlina >> newpipe.diam >> newpipe.remont;
+    fin.close();
+    return newpipe;
+}
+
+
 
 int main()
 {
+   
     Pipeline pipe1;
-    pipe1 = Create_Pipe();
-    cout << pipe1.dlina;
+    pipe1 = LoadFile();
+    //pipe1 = Create_Pipe();
+    VivodPipeline(pipe1);
+   // ChangeStatus(pipe1.remont);
+   // SaveToFile(pipe1);
+    
 
 
    /* Kompressor_Station newstation;
