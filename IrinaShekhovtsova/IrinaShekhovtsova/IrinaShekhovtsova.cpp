@@ -20,6 +20,7 @@ int main()
 //   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
 */
 
+/*
 #include <iostream>
 using namespace std;
 
@@ -30,4 +31,28 @@ int main()
     cin >> ch;
     cout << 10 / ch;
     return 0;
+}
+*/
+
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+struct Pipeline
+{
+    string ID;
+    int dlina;
+    int diam;
+    bool remont;
+};
+struct KompressorStation
+{
+    string ID;
+    string Name;
+    int plane;
+    int planework;
+    float effect;
+};
+int main()
+{
+
 }
