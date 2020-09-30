@@ -40,77 +40,196 @@ int main()
 using namespace std;
 struct Pipeline
 {
-    string ID;
-    int dlina;
-    int diam;
+    string ID = "NULL";
+    float dlina;
+    float diam;
     bool remont = false;
 };
-struct Kompressor_Station
+struct KompressorStation
 {
-    string ID;
-    string Name;
-    int plant;
-    int plant_working;
+    string ID = "NULL";
+    string Name = "NULL";
+    float plants;
+    float plants_working;
     float efficiency;
 };
-
+float CheckInput(float x)
+{
+      if (cin.fail() || x < 0)
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Try to type again: ";
+            cin >> x;
+            x = CheckInput(x);
+        }
+        else
+        {
+            cin.ignore(1000, '\n');
+            return x;
+        }
+      return x;
+}
+float CheckEfficiency(float x)
+{
+    if (cin.fail() || x <= 0 || x > 1)
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Try to type again: ";
+        cin >> x;
+        CheckInput(x);
+    }
+    else
+    {
+        cin.ignore(1000, '\n');
+        return x;
+    }
+}
 Pipeline Create_Pipe()
 {
     Pipeline newpipe;
-    cout << "Dlina: ";
-    cin >> newpipe.dlina;
-    cout << "Diametr: ";
-    cin >> newpipe.diam;
-    newpipe.ID = " ";
+    while (true)
+    {
+        cout << "Type the length: ";
+        cin >> newpipe.dlina;
+        newpipe.dlina = CheckInput(newpipe.dlina);
+        cout << "Type the diametr: ";
+        cin >> newpipe.diam;
+        newpipe.diam = CheckInput(newpipe.diam);
+        break;
+    }
     return newpipe;
 }
-
-void VivodPipeline(Pipeline newpipe)
+KompressorStation Create_Station()
 {
-    cout << "Dlina: " << newpipe.dlina << "\n";
-    cout << "Diametr: " << newpipe.diam << "\n";
+    KompressorStation newstation;
+    cout << "Type the amount of plants: ";
+    cin >> newstation.plants;
+    newstation.plants = CheckInput(newstation.plants);
+    cout << "Type the amount of working plants: ";
+    cin >> newstation.plants_working;
+    newstation.plants_working = CheckInput(newstation.plants_working);
+    cout << "Type the efficiency: ";
+    cin >> newstation.efficiency;
+    newstation.efficiency = CheckEfficiency(newstation.efficiency);
+    return newstation;
 }
-
+void PrintPipeline(const Pipeline& newpipe)
+{
+    cout << "The length: " << newpipe.dlina << "\n";
+    cout << "The diametr: " << newpipe.diam << "\n";
+    (newpipe.remont == false) ? cout << "Not in repair\n" : cout << "In repair\n";
+}
+void PrintStation(const KompressorStation& newstation)
+{
+    cout << "The amount of plants: " << newstation.plants << "\n";
+    cout << "The amount of working plants: " << newstation.plants_working << "\n";
+    cout << "The efficiency: " << newstation.efficiency << "\n";
+}
 void ChangeStatus(bool& status)
 {
     status = !status;
 }
-
-void SaveToFile(Pipeline newpipe)
+void SaveToFile1(const Pipeline& newpipe)
 {
     ofstream fout;
-    fout.open("data.txt");
-    fout << newpipe.ID << endl << newpipe.dlina << endl << newpipe.diam << endl << newpipe.remont;
-    fout.close();
+    fout.open("data1.txt", ios::out);
+    if (fout.is_open())
+    {
+        fout << newpipe.ID << endl << newpipe.dlina << endl << newpipe.diam << endl << newpipe.remont << endl;
+        fout.close();
+    }
 }
-
-Pipeline LoadFile()
+void SaveToFile2(const KompressorStation& newstation)
 {
-    ifstream fin;
-    fin.open("data.txt");
+    ofstream fout;
+    fout.open("data2.txt", ios::out);
+    if (fout.is_open())
+    {
+        fout << newstation.ID << endl << newstation.Name << endl << newstation.plants << endl << newstation.plants_working << endl
+            << newstation.efficiency << endl;
+        fout.close();
+    }
+}
+Pipeline LoadFromFile1()
+{
     Pipeline newpipe;
-    fin >> newpipe.ID >> newpipe.dlina >> newpipe.diam >> newpipe.remont;
-    fin.close();
+    ifstream fin;
+    fin.open("data1.txt",ios::in);
+    if (fin.is_open())
+    {
+        fin >> newpipe.ID;
+        fin >> newpipe.dlina;
+        fin >> newpipe.diam;
+        fin >> newpipe.remont;
+        fin.close();
+    }
     return newpipe;
 }
-
-
-
+KompressorStation LoadFromFile2()
+{
+    KompressorStation newstation;
+    ifstream fin;
+    fin.open("data2.txt",ios::in);
+    if (fin.is_open())
+    {
+        fin >> newstation.ID >> newstation.Name >> newstation.plants >> newstation.plants_working >> newstation.efficiency;
+        fin.close();
+    }
+    return newstation;
+}
+void PrintMenu()
+{
+    cout << "1. Input pipeline" << endl
+        << "2. Print pipeline" << endl
+        << "3. Save to file" << endl
+        << "4. Load from file" << endl
+        << "5. Edit pipeline" << endl
+        << "0. Exit" << endl;
+}
 int main()
 {
-   
     Pipeline pipe1;
-    pipe1 = LoadFile();
-    //pipe1 = Create_Pipe();
-    VivodPipeline(pipe1);
-   // ChangeStatus(pipe1.remont);
-   // SaveToFile(pipe1);
-    
-
-
-   /* Kompressor_Station newstation;
-    cin >> newstation.Name;
-    cin >> newstation.plant;
-    cin >> newstation.plant_working;
-    cin >> newstation.efficiency; */
+    bool ability = false;
+    while (true)
+    {
+        PrintMenu();
+        int i = 0;
+        cin >> i;
+        i = CheckInput(i);
+        switch (i)
+        {
+        case 1:
+        {
+            ability = true;
+            pipe1 = Create_Pipe();
+            break;
+        }
+        case 2: 
+        {
+            if (ability) PrintPipeline(pipe1);  else cout << "Pipeline wasn't created\n";
+            break; 
+        }
+        case 3: 
+        {
+            if (ability) SaveToFile1(pipe1); else cout << "Pipeline wasn't created\n";
+            break; 
+        }
+        case 4: 
+        {
+            ability = true;
+            pipe1 = LoadFromFile1();
+            break; 
+        }
+        case 5: 
+        {
+            if (ability) ChangeStatus(pipe1.remont); else cout << "Pipeline wasn't created\n";
+            break; 
+        }
+        case 0: return 0;
+            break;
+        default: cout << "Wrong action!" << endl;
+        }
+    }
 }
