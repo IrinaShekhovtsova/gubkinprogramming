@@ -55,7 +55,7 @@ struct KompressorStation
 };
 float CheckInput(float x)
 {
-      if (cin.fail() || x < 0)
+      if (cin.fail() || x <= 0)
         {
             cin.clear();
             cin.ignore(1000, '\n');
@@ -69,6 +69,23 @@ float CheckInput(float x)
             return x;
         }
       return x;
+}
+int CheckValue(int x)
+{
+    if (cin.fail() || (x != 0 && x != 1))
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Try to type again: ";
+        cin >> x;
+        x = CheckValue(x);
+    }
+    else
+    {
+        cin.ignore(1000, '\n');
+        return x;
+    }
+    return x;
 }
 float CheckEfficiency(float x)
 {
@@ -85,31 +102,35 @@ float CheckEfficiency(float x)
         cin.ignore(1000, '\n');
         return x;
     }
+    return x;
 }
 Pipeline Create_Pipe()
 {
     Pipeline newpipe;
-    while (true)
-    {
         cout << "Type the length: ";
         cin >> newpipe.dlina;
         newpipe.dlina = CheckInput(newpipe.dlina);
         cout << "Type the diametr: ";
         cin >> newpipe.diam;
         newpipe.diam = CheckInput(newpipe.diam);
-        break;
-    }
     return newpipe;
 }
 KompressorStation Create_Station()
 {
     KompressorStation newstation;
+    cout << "Type the name: ";
+    cin >> newstation.Name;
     cout << "Type the amount of plants: ";
     cin >> newstation.plants;
     newstation.plants = CheckInput(newstation.plants);
-    cout << "Type the amount of working plants: ";
-    cin >> newstation.plants_working;
-    newstation.plants_working = CheckInput(newstation.plants_working);
+    do
+    {
+        cout << "Type the amount of working plants: ";
+        cin >> newstation.plants_working;
+        if (newstation.plants_working != 0)
+        newstation.plants_working = CheckInput(newstation.plants_working);
+    }
+    while (newstation.plants_working > newstation.plants);
     cout << "Type the efficiency: ";
     cin >> newstation.efficiency;
     newstation.efficiency = CheckEfficiency(newstation.efficiency);
@@ -123,6 +144,7 @@ void PrintPipeline(const Pipeline& newpipe)
 }
 void PrintStation(const KompressorStation& newstation)
 {
+    cout << "The name: " << newstation.Name << "\n";
     cout << "The amount of plants: " << newstation.plants << "\n";
     cout << "The amount of working plants: " << newstation.plants_working << "\n";
     cout << "The efficiency: " << newstation.efficiency << "\n";
@@ -130,6 +152,15 @@ void PrintStation(const KompressorStation& newstation)
 void ChangeStatus(bool& status)
 {
     status = !status;
+}
+void EditStation(KompressorStation& newstation)
+{
+    int n;
+    cout << "To run a plant type 1, to  stop a plant type 0: ";
+    cin >> n;
+    n = CheckValue(n);
+    if (newstation.plants_working == 0 && n == 1) cout << "There are no working plants";
+    else if (n == 1) newstation.plants_working += 1; else newstation.plants_working -= 1;
 }
 void SaveToFile1(const Pipeline& newpipe)
 {
@@ -186,12 +217,17 @@ void PrintMenu()
         << "3. Save to file" << endl
         << "4. Load from file" << endl
         << "5. Edit pipeline" << endl
-        << "0. Exit" << endl;
+        << "6. Input station" << endl
+        << "7. Print station" << endl
+        << "8. Edit station" << endl
+        << "9. Exit" << endl;
 }
 int main()
 {
     Pipeline pipe1;
+    KompressorStation station1;
     bool ability = false;
+    bool possibility = false;
     while (true)
     {
         PrintMenu();
@@ -227,7 +263,23 @@ int main()
             if (ability) ChangeStatus(pipe1.remont); else cout << "Pipeline wasn't created\n";
             break; 
         }
-        case 0: return 0;
+        case 6:
+        {
+            possibility = true;
+            station1 = Create_Station();
+            break;
+        }
+        case 7:
+        {
+            if (possibility) PrintStation(station1); else cout << "Station wasn't created\n";
+            break;
+        }
+        case 8:
+        {
+            if (possibility) EditStation(station1); else cout << "Station wasn't created\n";
+            break;
+        }
+        case 9: return 0;
             break;
         default: cout << "Wrong action!" << endl;
         }
