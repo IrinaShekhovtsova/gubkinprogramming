@@ -37,7 +37,6 @@ int main()
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
-#include <string>
 using namespace std;
 struct Pipeline
 {
@@ -50,8 +49,8 @@ struct KompressorStation
 {
     string ID = "NULL";
     string Name = "NULL";
-    int plants;
-    int plants_working;
+    float plants;
+    float plants_working;
     float efficiency;
 };
 float CheckInput(float x)
@@ -66,8 +65,8 @@ float CheckInput(float x)
         }
         else
         {
-           cin.ignore(1000, '\n');
-           return x;
+            cin.ignore(1000, '\n');
+            return x;
         }
       return x;
 }
@@ -157,16 +156,16 @@ void ChangeStatus(bool& status)
 void EditStation(KompressorStation& newstation)
 {
     int n;
-    cout << "To run a plant type 1, to stop a plant type 0: ";
+    cout << "To run a plant type 1, to  stop a plant type 0: ";
     cin >> n;
     n = CheckValue(n);
     if (newstation.plants_working == 0 && n == 1) cout << "There are no working plants";
     else if (n == 1) newstation.plants_working += 1; else newstation.plants_working -= 1;
-} 
+}
 void SaveToFile1(const Pipeline& newpipe)
 {
     ofstream fout;
-    fout.open("data1.txt", ios::app);
+    fout.open("data1.txt", ios::out);
     if (fout.is_open())
     {
         fout << newpipe.ID << endl << newpipe.dlina << endl << newpipe.diam << endl << newpipe.remont << endl;
@@ -176,7 +175,7 @@ void SaveToFile1(const Pipeline& newpipe)
 void SaveToFile2(const KompressorStation& newstation)
 {
     ofstream fout;
-    fout.open("data1.txt", ios::app);
+    fout.open("data2.txt", ios::out);
     if (fout.is_open())
     {
         fout << newstation.ID << endl << newstation.Name << endl << newstation.plants << endl << newstation.plants_working << endl
@@ -199,26 +198,15 @@ Pipeline LoadFromFile1()
     }
     return newpipe;
 }
-KompressorStation LoadFromFile2(int n)
+KompressorStation LoadFromFile2()
 {
     KompressorStation newstation;
-    string s;
-    bool notfound = true;
     ifstream fin;
-    fin.open("data1.txt", ios::in);
+    fin.open("data2.txt",ios::in);
     if (fin.is_open())
     {
-        while (getline(fin, s) && notfound == (--n > 0));
-        getline(fin, s);
-        newstation.ID = s;
-        getline(fin, s);
-        newstation.Name = s;
-        getline(fin, s);
-        newstation.plants = stoi(s);
-        getline(fin, s);
-        newstation.plants_working = stoi(s);
-        getline(fin, s);
-        newstation.efficiency = stof(s);
+        fin >> newstation.ID >> newstation.Name >> newstation.plants >> newstation.plants_working >> newstation.efficiency;
+        fin.close();
     }
     return newstation;
 }
@@ -226,15 +214,13 @@ void PrintMenu()
 {
     cout << "1. Input pipeline" << endl
         << "2. Print pipeline" << endl
-        << "3. Save pipeline to file" << endl
-        << "4. Load pipeline from file" << endl
+        << "3. Save to file" << endl
+        << "4. Load from file" << endl
         << "5. Edit pipeline" << endl
         << "6. Input station" << endl
         << "7. Print station" << endl
         << "8. Edit station" << endl
-        << "9. Save station to file" << endl
-        << "10. Load station from file" << endl
-        << "11. Exit" << endl;
+        << "9. Exit" << endl;
 }
 int main()
 {
@@ -293,18 +279,7 @@ int main()
             if (possibility) EditStation(station1); else cout << "Station wasn't created\n";
             break;
         }
-        case 9:
-        {
-            if (possibility) SaveToFile2(station1); else cout << "Station wasn't created\n";
-            break;
-        }
-        case 10:
-        {
-            possibility = true;
-            station1 = LoadFromFile2(4);
-            break;
-        }
-        case 11: return 0;
+        case 9: return 0;
             break;
         default: cout << "Wrong action!" << endl;
         }
