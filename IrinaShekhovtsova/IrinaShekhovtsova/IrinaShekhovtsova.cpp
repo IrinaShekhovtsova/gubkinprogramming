@@ -50,27 +50,24 @@ struct KompressorStation
 {
     string ID = "NULL";
     string Name = "NULL";
-    int plants;
-    int plants_working;
+    int shops;
+    int shops_working = 0;
     float efficiency;
 };
+
 float CheckInput(float x)
 {
-      if (cin.fail() || x <= 0 || x-(int)x != 0)
-        {
-            cin.clear();
-            cin.ignore(1000, '\n');
-            cout << "Try to type again: ";
-            cin >> x;
-            x = CheckInput(x);
-        }
-        else
-        {
-            cin.ignore(1000, '\n');
-            return x;
-        }
-      return x;
+    while (cin.fail() || x <= 0 || x - (int)x != 0)
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Try to type again: ";
+        cin >> x;
+    }
+    cin.ignore(1000, '\n');
+    return x;
 }
+
 int CheckValue(int x)
 {
     if (cin.fail() || (x != 0 && x != 1))
@@ -115,13 +112,6 @@ Pipeline Create_Pipe()
     cout << "Type the diametr: ";
     cin >> data;
     newpipe.diam = CheckInput(data);
-    /*Pipeline newpipe;
-        cout << "Type the length: ";
-        cin >> newpipe.dlina;
-        newpipe.dlina = CheckInput(newpipe.dlina);
-        cout << "Type the diametr: ";
-        cin >> newpipe.diam;
-        newpipe.diam = CheckInput(newpipe.diam);*/
     return newpipe;
 }
 KompressorStation Create_Station()
@@ -130,28 +120,17 @@ KompressorStation Create_Station()
     KompressorStation newstation;
     cout << "Type the name: ";
     cin >> newstation.Name;
-    cout << "Type the amount of plants: ";
+    cout << "Type the amount of shops: ";
     cin >> data;
-    newstation.plants = CheckInput(data);
-    do
+    newstation.shops = CheckInput(data);
+  /*  do
     {
-        cout << "Type the amount of working plants: ";
+        cout << "Type the amount of working shops: ";
         cin >> data;
         if (data != 0)
-            newstation.plants_working = CheckInput(data); else newstation.plants_working = data;
+            newstation.shops_working = CheckInput(data); else newstation.shops_working = data;
     }
-    while (newstation.plants_working > newstation.plants);
-    /*сout << "Type the amount of plants: ";
-    cin >> newstation.plants;
-    newstation.plants = CheckInput(newstation.plants);
-    do
-    {
-        cout << "Type the amount of working plants: ";
-        cin >> newstation.plants_working;
-        if (newstation.plants_working != 0)
-        newstation.plants_working = CheckInput(newstation.plants_working);
-    }
-    while (newstation.plants_working > newstation.plants);*/
+    while (newstation.shops_working > newstation.shops);*/
     cout << "Type the efficiency: ";
     cin >> newstation.efficiency;
     newstation.efficiency = CheckEfficiency(newstation.efficiency);
@@ -166,8 +145,8 @@ void PrintPipeline(const Pipeline& newpipe)
 void PrintStation(const KompressorStation& newstation)
 {
     cout << "The name: " << newstation.Name << "\n";
-    cout << "The amount of plants: " << newstation.plants << "\n";
-    cout << "The amount of working plants: " << newstation.plants_working << "\n";
+    cout << "The amount of shops: " << newstation.shops << "\n";
+    cout << "The amount of working shops: " << newstation.shops_working << "\n";
     cout << "The efficiency: " << newstation.efficiency << "\n";
 }
 void ChangeStatus(bool& status)
@@ -177,12 +156,12 @@ void ChangeStatus(bool& status)
 void EditStation(KompressorStation& newstation)
 {
     int n;
-    cout << "To run a plant type 1, to stop a plant type 0: ";
+    cout << "To run a shop type 1, to stop a shop type 0: ";
     cin >> n;
     n = CheckValue(n);
-    if (newstation.plants_working == 0 && n == 0) cout << "There are no working plants" << endl;
-    else if (newstation.plants_working == newstation.plants && n == 1) cout << "All plants are working" << endl;
-    else if (n == 1) newstation.plants_working += 1; else newstation.plants_working -= 1;
+    if (newstation.shops_working == 0 && n == 0) cout << "There are no working shops" << endl;
+    else if (newstation.shops_working == newstation.shops && n == 1) cout << "All shops are working" << endl;
+    else if (n == 1) newstation.shops_working += 1; else newstation.shops_working -= 1;
 }
 void SaveToFile1(const Pipeline& newpipe)
 {
@@ -200,7 +179,7 @@ void SaveToFile2(const KompressorStation& newstation)
     fout.open("data1.txt", ios::app);
     if (fout.is_open())
     {
-        fout << newstation.ID << endl << newstation.Name << endl << newstation.plants << endl << newstation.plants_working << endl
+        fout << newstation.ID << endl << newstation.Name << endl << newstation.shops << endl << newstation.shops_working << endl
             << newstation.efficiency << endl;
         fout.close();
     }
@@ -230,16 +209,18 @@ KompressorStation LoadFromFile2(int n)
     if (fin.is_open())
     {
         while (getline(fin, s) && notfound == (--n > 0));
-        getline(fin, s);
-        newstation.ID = s;
-        getline(fin, s);
-        newstation.Name = s;
-        getline(fin, s);
-        newstation.plants = stoi(s);
-        getline(fin, s);
-        newstation.plants_working = stoi(s);
-        getline(fin, s);
-        newstation.efficiency = stof(s);
+        
+            getline(fin, s);
+            newstation.ID = s;
+            getline(fin, s);
+            newstation.Name = s;
+            getline(fin, s);
+            newstation.shops = stoi(s);
+            getline(fin, s);
+            newstation.shops_working = stoi(s);
+            getline(fin, s);
+            newstation.efficiency = stof(s);
+        
         fin.close();
     }
     return newstation;
