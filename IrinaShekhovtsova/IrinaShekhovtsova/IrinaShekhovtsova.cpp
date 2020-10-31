@@ -1,148 +1,74 @@
 ﻿// IrinaShekhovtsova.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 
-/*
 #include <iostream>
-
-int main()
-{
-    std::cout << "Hello World!\n";
-}
-
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
-*/
-
-/*
-#include <iostream>
-using namespace std;
-
-int main()
-{
-    cout << "Hello World" << endl;
-    int ch;
-    cin >> ch;
-    cout << 10 / ch;
-    return 0;
-}
-*/
-
-#include <iostream>
-#include <stdlib.h>
 #include <fstream>
 #include <string> 
+#include <vector>
 using namespace std;
 struct Pipeline
 {
     string ID = "NULL";
-    int dlina;
-    int diam;
-    bool remont = false;
+    double length;
+    int diameter;
+    bool repair = false;
 };
-struct KompressorStation
+struct CompressorStation
 {
     string ID = "NULL";
     string Name = "NULL";
     int shops;
     int shops_working = 0;
-    float efficiency;
+    double efficiency;
 };
-
-float CheckInput(float x)
+int CheckInt(int min, int max)
 {
-    while (cin.fail() || x <= 0 || x - (int)x != 0)
+    double x;
+    while ((cin >> x).fail() || x<min || x>max || x - (int)x != 0)
     {
         cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Try to type again: ";
-        cin >> x;
+        cin.ignore(10000, '\n');
+        cout << "Type again in the range from " << min << " to " << max << ": ";
     }
-    cin.ignore(1000, '\n');
-    return x;
+    return (int)x;
 }
-
-int CheckValue(int x)
+double CheckDouble(double min, double max)
 {
-    if (cin.fail() || (x != 0 && x != 1))
+    double x;
+    while ((cin >> x).fail() || x<min || x>max)
     {
         cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Try to type again: ";
-        cin >> x;
-        x = CheckValue(x);
-    }
-    else
-    {
-        cin.ignore(1000, '\n');
-        return x;
-    }
-    return x;
-}
-float CheckEfficiency(float x)
-{
-    if (cin.fail() || x < 0 || x > 1)
-    {
-        cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Try to type again: ";
-        cin >> x;
-        CheckInput(x);
-    }
-    else
-    {
-        cin.ignore(1000, '\n');
-        return x;
+        cin.ignore(10000, '\n');
+        cout << "Type again in the range from " << min << " to " << max << ": ";
     }
     return x;
 }
 Pipeline Create_Pipe()
 {
     Pipeline newpipe;
-    float data;
-    cout << "Type the length: ";
-    cin >> data;
-    newpipe.dlina = CheckInput(data);
-    cout << "Type the diametr: ";
-    cin >> data;
-    newpipe.diam = CheckInput(data);
+    cout << "Type the length (0-2000): ";
+    newpipe.length = CheckDouble(0,2000);
+    cout << "Type the diametr (0-1420): ";
+    newpipe.diameter = CheckInt(0,1420);
     return newpipe;
 }
-KompressorStation Create_Station()
+CompressorStation Create_Station()
 {
-    float data;
-    KompressorStation newstation;
+    CompressorStation newstation;
     cout << "Type the name: ";
     cin >> newstation.Name;
-    cout << "Type the amount of shops: ";
-    cin >> data;
-    newstation.shops = CheckInput(data);
-  /*  do
-    {
-        cout << "Type the amount of working shops: ";
-        cin >> data;
-        if (data != 0)
-            newstation.shops_working = CheckInput(data); else newstation.shops_working = data;
-    }
-    while (newstation.shops_working > newstation.shops);*/
-    cout << "Type the efficiency: ";
-    cin >> newstation.efficiency;
-    newstation.efficiency = CheckEfficiency(newstation.efficiency);
+    cout << "Type the amount of shops (0-200): ";
+    newstation.shops = CheckInt(0,200);
+    cout << "Type the efficiency (0-1): ";
+    newstation.efficiency = CheckDouble(0,1);
     return newstation;
 }
 void PrintPipeline(const Pipeline& newpipe)
 {
-    cout << "The length: " << newpipe.dlina << "\n";
-    cout << "The diametr: " << newpipe.diam << "\n";
-    (newpipe.remont == false) ? cout << "Not in repair\n" : cout << "In repair\n";
+    cout << "The length: " << newpipe.length << "\n";
+    cout << "The diametr: " << newpipe.diameter << "\n";
+    (newpipe.repair == false) ? cout << "Not in repair\n" : cout << "In repair\n";
 }
-void PrintStation(const KompressorStation& newstation)
+void PrintStation(const CompressorStation& newstation)
 {
     cout << "The name: " << newstation.Name << "\n";
     cout << "The amount of shops: " << newstation.shops << "\n";
@@ -153,162 +79,142 @@ void ChangeStatus(bool& status)
 {
     status = !status;
 }
-void EditStation(KompressorStation& newstation)
+void EditStation(CompressorStation& newstation)
 {
-    int n;
     cout << "To run a shop type 1, to stop a shop type 0: ";
-    cin >> n;
-    n = CheckValue(n);
+    int n = CheckInt(0,1);
     if (newstation.shops_working == 0 && n == 0) cout << "There are no working shops" << endl;
     else if (newstation.shops_working == newstation.shops && n == 1) cout << "All shops are working" << endl;
     else if (n == 1) newstation.shops_working += 1; else newstation.shops_working -= 1;
 }
-void SaveToFile1(const Pipeline& newpipe)
-{
-    ofstream fout;
-    fout.open("data1.txt", ios::app);
-    if (fout.is_open())
+void SavePipeToFile(ofstream& fout, const Pipeline& newpipe)
     {
-        fout << newpipe.ID << endl << newpipe.dlina << endl << newpipe.diam << endl << newpipe.remont << endl;
-        fout.close();
+        fout << newpipe.ID << endl << newpipe.length << endl << newpipe.diameter << endl << newpipe.repair << endl;
     }
-}
-void SaveToFile2(const KompressorStation& newstation)
-{
-    ofstream fout;
-    fout.open("data1.txt", ios::app);
-    if (fout.is_open())
+
+void SaveStationToFile(ofstream& fout, const CompressorStation& newstation)
     {
         fout << newstation.ID << endl << newstation.Name << endl << newstation.shops << endl << newstation.shops_working << endl
             << newstation.efficiency << endl;
-        fout.close();
     }
-}
-Pipeline LoadFromFile1()
+Pipeline LoadPipeFromFile(ifstream& fin)
 {
     Pipeline newpipe;
-    ifstream fin;
-    fin.open("data1.txt",ios::in);
-    if (fin.is_open())
-    {
-        fin >> newpipe.ID;
-        fin >> newpipe.dlina;
-        fin >> newpipe.diam;
-        fin >> newpipe.remont;
-        fin.close();
-    }
+    fin >> newpipe.ID >> newpipe.length >> newpipe.diameter >> newpipe.repair;
     return newpipe;
 }
-KompressorStation LoadFromFile2(int n)
+CompressorStation LoadStationFromFile(ifstream& fin)
 {
-    KompressorStation newstation;
-    string s;
-    bool notfound = true;
-    ifstream fin;
-    fin.open("data1.txt",ios::in);
-    if (fin.is_open())
-    {
-        while (getline(fin, s) && notfound == (--n > 0));
-        
-            getline(fin, s);
-            newstation.ID = s;
-            getline(fin, s);
-            newstation.Name = s;
-            getline(fin, s);
-            newstation.shops = stoi(s);
-            getline(fin, s);
-            newstation.shops_working = stoi(s);
-            getline(fin, s);
-            newstation.efficiency = stof(s);
-        
-        fin.close();
-    }
+    CompressorStation newstation;
+    fin >> newstation.ID >> newstation.Name >> newstation.shops >> newstation.shops_working >> newstation.efficiency;
     return newstation;
+}
+template <class T>
+T& SelectObject(vector <T>& array)
+{
+    cout << "Enter index: ";
+    unsigned int index = CheckInt(1,array.size());
+    return array[index-1];
 }
 void PrintMenu()
 {
     cout << "1. Input pipeline" << endl
-        << "2. Print pipeline" << endl
-        << "3. Save pipeline to file" << endl
-        << "4. Load pipeline from file" << endl
+        << "2. View all objects" << endl
+        << "3. Save to file" << endl
+        << "4. Load from file" << endl
         << "5. Edit pipeline" << endl
         << "6. Input station" << endl
-        << "7. Print station" << endl
-        << "8. Edit station" << endl
-        << "9. Save station to file" << endl
-        << "10. Load station from file" << endl
-        << "11. Exit" << endl;
+        << "7. Edit station" << endl
+        << "0. Exit" << endl;
 }
 int main()
 {
-    Pipeline pipe1;
-    KompressorStation station1;
-    bool ability = false;
-    bool possibility = false;
+    vector <Pipeline> pipes;
+    vector <CompressorStation> stations;
     while (true)
     {
         PrintMenu();
-        int i = 0;
-        cin >> i;
-        i = CheckInput(i);
+        int i = CheckInt(0,10);
         switch (i)
         {
         case 1:
         {
-            ability = true;
-            pipe1 = Create_Pipe();
+            pipes.push_back(Create_Pipe());
             break;
         }
         case 2: 
         {
-            if (ability) PrintPipeline(pipe1);  else cout << "Pipeline wasn't created\n";
+            if (pipes.size() != 0)
+            {
+                for (auto& pipe : pipes)
+                    PrintPipeline(pipe);
+            }
+            else cout << "There aren't any added pipes" << endl;
+            if (stations.size() != 0)
+            {
+                for (auto& station : stations)
+                    PrintStation(station);
+            }
+            else cout << "There aren't any added stations" << endl;
             break; 
         }
         case 3: 
         {
-            if (ability) SaveToFile1(pipe1); else cout << "Pipeline wasn't created\n";
+            ofstream fout;
+            fout.open("data1.txt", ios::out);
+            if (fout.is_open())
+            {
+                fout << pipes.size() << endl;
+                for (Pipeline pipe : pipes)
+                    SavePipeToFile(fout,pipe);
+                fout << stations.size() << endl;
+                for (CompressorStation station : stations)
+                    SaveStationToFile(fout, station);
+                fout.close();
+            }
             break; 
         }
         case 4: 
         {
-            ability = true;
-            pipe1 = LoadFromFile1();
+            ifstream fin;
+            fin.open("data1.txt", ios::in);
+            if (fin.is_open())
+            {
+                int count;
+                fin >> count;
+                while (count--)
+                    pipes.push_back(LoadPipeFromFile(fin));
+                fin >> count;
+                while (count--)
+                    stations.push_back(LoadStationFromFile(fin));    
+                fin.close();
+            }
             break; 
         }
         case 5: 
         {
-            if (ability) ChangeStatus(pipe1.remont); else cout << "Pipeline wasn't created\n";
+            if (pipes.size() != 0)
+                ChangeStatus(SelectObject(pipes).repair);
+            else cout << "There aren't any added pipes" << endl;
             break; 
         }
         case 6:
         {
-            possibility = true;
-            station1 = Create_Station();
+            stations.push_back(Create_Station());
             break;
         }
         case 7:
         {
-            if (possibility) PrintStation(station1); else cout << "Station wasn't created\n";
+            if (stations.size() != 0)
+                EditStation(SelectObject(stations));
+            else cout << "There aren't any added stations" << endl;
             break;
         }
-        case 8:
+        case 0:
         {
-            if (possibility) EditStation(station1); else cout << "Station wasn't created\n";
+            return 0;
             break;
         }
-        case 9:
-        {
-            if (possibility) SaveToFile2(station1); else cout << "Station wasn't created\n";
-            break;
-        }
-        case 10:
-        {
-            possibility = true;
-            station1 = LoadFromFile2(4);
-            break;
-        }
-        case 11: return 0;
-            break;
         default: cout << "Wrong action!" << endl;
         }
     }
