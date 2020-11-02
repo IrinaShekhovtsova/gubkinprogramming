@@ -8,7 +8,7 @@ public:
     static int maxID;
     double length;
     int diameter;
-    bool repair = false;
+    bool repair;
     Pipeline();
 
     friend std::istream& operator >> (std::istream& in, Pipeline& newpipe);

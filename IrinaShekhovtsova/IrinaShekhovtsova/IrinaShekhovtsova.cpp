@@ -42,6 +42,36 @@ T& SelectObject(vector <T>& array)
     unsigned int index = CheckInt(1,array.size());
     return array[index-1];
 }
+template <class T, class T_class>
+using Filter = bool(*)(const T_class& station, T argument);
+bool CheckbyID(const Pipeline& pipe, int argument)
+{
+    return pipe.ID == argument;
+}
+bool CheckbyRepair(const Pipeline& pipe, bool argument)
+{
+    return pipe.repair == argument;
+}
+bool CheckbyName(const CompressorStation& station, string argument)
+{
+    return station.Name == argument;
+}
+bool CheckbyPercentage(const CompressorStation& station, int argument)
+{
+    int percentage_unutilised_shops = 100 - int(100 * station.efficiency);
+    return percentage_unutilised_shops == argument;
+}
+template <class T, class T_class>
+vector <int> FindbyFilter(const vector <T_class>& array, Filter<T, T_class> f, T argument)
+{
+    vector <int> res;
+    int i = 0;
+    for (auto& object : array) {
+        if (f(object, argument)) res.push_back(i);
+        i++;
+    }
+    return res;
+}
 void PrintMenu()
 {
     cout << "1. Input pipeline" << endl
@@ -51,7 +81,15 @@ void PrintMenu()
         << "5. Edit pipeline" << endl
         << "6. Input station" << endl
         << "7. Edit station" << endl
+        << "8. Search pipelines by filter" << endl
+        << "9. Search compressor stations by filter" << endl
         << "0. Exit" << endl;
+}
+void PrintOption(string option1, string option2)
+{
+    cout << option1 << endl
+        << option2 << endl
+        << "0. Return to menu" << endl;
 }
 int main()
 {
@@ -60,7 +98,7 @@ int main()
     while (true)
     {
         PrintMenu();
-        int i = CheckInt(0,7);
+        int i = CheckInt(0,9);
         switch (i)
         {
         case 1:
@@ -141,6 +179,77 @@ int main()
             if (stations.size() != 0)
                 EditStation(SelectObject(stations));
             else cout << "There aren't any added stations" << endl;
+            break;
+        }
+        case 8:
+        {
+            bool MenuOpened = false;
+            if (pipes.size() != 0) MenuOpened = true; else cout << "There aren't any added pipes" << endl;
+            while (MenuOpened)
+            {
+                PrintOption("1. Search pipelines by ID", "2. Search pipelines in repair");
+                int j = CheckInt(0, 2);
+                switch (j)
+                {
+                case 1:
+                {
+                    cout << "Enter ID (1001-1999): ";
+                    int ID = CheckInt(1001, Pipeline::maxID);
+                    for (int k : FindbyFilter(pipes, CheckbyID, ID))
+                        cout << pipes[k];
+                    break;
+                }
+                case 2:
+                {
+                    for (int k : FindbyFilter(pipes, CheckbyRepair, true))
+                        cout << pipes[k];
+                    break;
+                }
+                case 0:
+                {
+                    MenuOpened = false;
+                    break;
+                }
+                default: cout << "Wrong action!" << endl;
+                }
+            }
+            break;
+        }
+        case 9:
+        {
+            bool MenuOpened = false;
+            if (stations.size() != 0) MenuOpened = true; else cout << "There aren't any added stations" << endl;
+            while (MenuOpened)
+            {
+                PrintOption("1. Search compressor stations by name", "2. Search compressor stations by percentage of unutilised shops");
+                int j = CheckInt(0, 2);
+                switch (j)
+                {
+                case 1:
+                {
+                    cout << "Enter name: ";
+                    string name;
+                    cin >> name;
+                    for (int k : FindbyFilter(stations, CheckbyName, name))
+                        cout << stations[k];
+                    break;
+                }
+                case 2:
+                {
+                    cout << "Enter percentage (0-100): ";
+                    int percentage = CheckInt(0, 100);
+                    for (int k : FindbyFilter(stations, CheckbyPercentage, percentage))
+                        cout << stations[k];
+                    break;
+                }
+                case 0:
+                {
+                    MenuOpened = false;
+                    break;
+                }
+                default: cout << "Wrong action!" << endl;
+                }
+            }
             break;
         }
         case 0:
