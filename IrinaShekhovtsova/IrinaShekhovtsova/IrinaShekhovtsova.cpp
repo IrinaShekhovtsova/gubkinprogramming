@@ -36,6 +36,23 @@ CompressorStation LoadStationFromFile(ifstream& fin)
     return newstation;
 }
 template <class T>
+void DeleteObject(vector <T>& array)
+{
+    cout << "Enter ID: ";
+    int ID = CheckInt(1001, T::maxID);
+    unsigned int index = 0;
+    bool ID_exist = false;
+    for (auto& object : array)
+    {
+        if (object.ID == ID) {
+            ID_exist = true;
+            array.erase(array.begin() + index);
+        }
+        ++index;
+    }
+    if (ID_exist == false) cout << "There is no object with ID " << ID << endl;
+}
+template <class T>
 T& SelectObject(vector <T>& array)
 {
     cout << "Enter index: ";
@@ -90,12 +107,13 @@ void PrintMenu()
         << "2. View all objects" << endl
         << "3. Save to file" << endl
         << "4. Load from file" << endl
-        << "5. Edit pipeline" << endl
+        << "5. Delete pipeline" << endl
         << "6. Input station" << endl
         << "7. Edit station" << endl
         << "8. Search pipelines by filter" << endl
         << "9. Search compressor stations by filter" << endl
         << "10. Burst editing of pipelines" << endl
+        << "11. Delete compressor station" << endl
         << "0. Exit" << endl;
 }
 void PrintOption(string option1, string option2)
@@ -112,7 +130,7 @@ int main()
     while (true)
     {
         PrintMenu();
-        int i = CheckInt(0,10);
+        int i = CheckInt(0,11);
         switch (i)
         {
         case 1:
@@ -176,9 +194,7 @@ int main()
         }
         case 5: 
         {
-            if (pipes.size() != 0)
-                ChangeStatus(SelectObject(pipes).repair);
-            else cout << "There aren't any added pipes" << endl;
+            if (pipes.size() != 0) DeleteObject(pipes); else cout << "There aren't any added pipes" << endl;
             break; 
         }
         case 6:
@@ -306,8 +322,14 @@ int main()
                     MenuOpened = false;
                     break;
                 }
+                default: cout << "Wrong action!" << endl;
                 }
             }
+            break;
+        }
+        case 11:
+        {
+            if (stations.size() != 0) DeleteObject(stations); else cout << "There aren't any added compressor stations" << endl;
             break;
         }
         case 0:
