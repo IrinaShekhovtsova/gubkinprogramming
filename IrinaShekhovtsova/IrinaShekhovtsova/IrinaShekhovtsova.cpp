@@ -42,6 +42,18 @@ T& SelectObject(vector <T>& array)
     unsigned int index = CheckInt(1,array.size());
     return array[index-1];
 }
+template <class T>
+T& SelectObjectbyID(vector <T>& array)
+{
+    cout << "Enter ID: ";
+    unsigned int ID = CheckInt(1001, T::maxID);
+    unsigned int index = 0;
+    for (auto& object : array)
+    {
+        if (object.ID == ID) return array[index];
+        ++index;
+    }
+}
 template <class T, class T_class>
 using Filter = bool(*)(const T_class& station, T argument);
 bool CheckbyID(const Pipeline& pipe, int argument)
@@ -83,6 +95,7 @@ void PrintMenu()
         << "7. Edit station" << endl
         << "8. Search pipelines by filter" << endl
         << "9. Search compressor stations by filter" << endl
+        << "10. Burst editing of pipelines" << endl
         << "0. Exit" << endl;
 }
 void PrintOption(string option1, string option2)
@@ -95,10 +108,11 @@ int main()
 {
     vector <Pipeline> pipes;
     vector <CompressorStation> stations;
+    vector <int> pipes_for_editing;
     while (true)
     {
         PrintMenu();
-        int i = CheckInt(0,9);
+        int i = CheckInt(0,10);
         switch (i)
         {
         case 1:
@@ -193,16 +207,24 @@ int main()
                 {
                 case 1:
                 {
-                    cout << "Enter ID (1001-1999): ";
+                    pipes_for_editing.resize(0);
+                    cout << "Enter ID: ";
                     int ID = CheckInt(1001, Pipeline::maxID);
-                    for (int k : FindbyFilter(pipes, CheckbyID, ID))
-                        cout << pipes[k];
+                    for (int& index : FindbyFilter(pipes, CheckbyID, ID))
+                    {
+                        cout << pipes[index];
+                        pipes_for_editing.push_back(index);
+                    }
                     break;
                 }
                 case 2:
                 {
-                    for (int k : FindbyFilter(pipes, CheckbyRepair, true))
-                        cout << pipes[k];
+                    pipes_for_editing.resize(0);
+                    for (int& index : FindbyFilter(pipes, CheckbyRepair, true))
+                    {
+                        cout << pipes[index];
+                        pipes_for_editing.push_back(index);
+                    }
                     break;
                 }
                 case 0:
@@ -230,16 +252,16 @@ int main()
                     cout << "Enter name: ";
                     string name;
                     cin >> name;
-                    for (int k : FindbyFilter(stations, CheckbyName, name))
-                        cout << stations[k];
+                    for (int& index : FindbyFilter(stations, CheckbyName, name))
+                        cout << stations[index];
                     break;
                 }
                 case 2:
                 {
                     cout << "Enter percentage (0-100): ";
                     int percentage = CheckInt(0, 100);
-                    for (int k : FindbyFilter(stations, CheckbyPercentage, percentage))
-                        cout << stations[k];
+                    for (int& index : FindbyFilter(stations, CheckbyPercentage, percentage))
+                        cout << stations[index];
                     break;
                 }
                 case 0:
@@ -248,6 +270,42 @@ int main()
                     break;
                 }
                 default: cout << "Wrong action!" << endl;
+                }
+            }
+            break;
+        }
+        case 10:
+        {
+            bool MenuOpened = true;
+            while (MenuOpened)
+            {
+                PrintOption("1. Editing all found pipelines", "2. Editing by choice");
+                int j = CheckInt(0, 2);
+                switch (j)
+                {
+                case 1:
+                {
+                    if (pipes_for_editing.size() != 0)
+                    {
+                        for (int& index : pipes_for_editing)
+                            ChangeStatus(pipes[index].repair);
+                    }
+                    else cout << "There aren't any pipes for editing" << endl;
+                    break;
+                }
+                case 2:
+                {
+                    cout << "Type amount of pipes to edit: ";
+                    int n = CheckInt(1, pipes.size());
+                    for (int i = 0; i < n; ++i)
+                        ChangeStatus(SelectObjectbyID(pipes).repair);
+                    break;
+                }
+                case 0:
+                {
+                    MenuOpened = false;
+                    break;
+                }
                 }
             }
             break;
