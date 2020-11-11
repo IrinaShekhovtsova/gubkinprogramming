@@ -9,11 +9,21 @@ CompressorStation::CompressorStation()
     shops_working = 0;
     efficiency = 0;
 }
+
+int CompressorStation::GetID() const
+{
+    return ID;
+}
+
+int CompressorStation::GetShopsWorking() const
+{
+    return shops_working;
+}
+
 std::istream& operator>>(std::istream& in, CompressorStation& newstation)
 {
     std::cout << "Type the name: ";
-    //std::cin >> newstation.Name;
-    in.get();
+    in.ignore();
     getline(in, newstation.Name);
     std::cout << "Type the amount of shops (0-200): ";
     newstation.shops = CheckInt(0, 200);
@@ -29,6 +39,21 @@ std::ostream& operator<<(std::ostream& out, const CompressorStation& newstation)
     out << "The amount of working shops: " << newstation.shops_working << "\n";
     out << "The efficiency: " << newstation.efficiency << "\n";
     return out;
+}
+
+std::ifstream& operator>>(std::ifstream& fin, CompressorStation& newstation)
+{
+    fin.ignore();
+    getline(fin, newstation.Name);
+    fin >> newstation.shops >> newstation.shops_working >> newstation.efficiency;
+    return fin;
+}
+
+std::ofstream& operator<<(std::ofstream& fout, const CompressorStation& newstation)
+{
+    fout << newstation.Name << std::endl << newstation.shops << std::endl << newstation.shops_working << std::endl
+         << newstation.efficiency << std::endl;
+    return fout;
 }
 
 void EditStation(CompressorStation& newstation)

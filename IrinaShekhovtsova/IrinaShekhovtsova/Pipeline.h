@@ -1,17 +1,24 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <fstream>
 class Pipeline
 {
-public:
+    bool repair;
     int ID;
-    static int maxID;
+
+public:    
     double length;
     int diameter;
-    bool repair;
+    static int maxID;
     Pipeline();
 
+    int GetID() const;
+    int GetRepairStatus() const;
+    friend void ChangeStatus(Pipeline& newpipe);
     friend std::istream& operator >> (std::istream& in, Pipeline& newpipe);
     friend std::ostream& operator << (std::ostream& out, const Pipeline& newpipe);
+    friend std::ifstream& operator>>(std::ifstream& in, Pipeline& newpipe);
+    friend std::ofstream& operator<<(std::ofstream& fout, const Pipeline& newpipe);
 };
 
