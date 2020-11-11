@@ -2,8 +2,10 @@
 #include "utils.h"
 
 int Pipeline::maxID = 1000;
+int Pipeline::minID = 1000;
 Pipeline::Pipeline()
 {
+	minID = 1001;
 	ID = ++maxID;
 	length = 0;
 	diameter = 0;
@@ -14,7 +16,17 @@ int Pipeline::GetID() const
 	return ID;
 }
 
-int Pipeline::GetRepairStatus() const
+int Pipeline::GetmaxID()
+{
+	return maxID;
+}
+
+int Pipeline::GetminID()
+{
+	return minID;
+}
+
+bool Pipeline::GetRepairStatus() const
 {
 	return repair;
 }

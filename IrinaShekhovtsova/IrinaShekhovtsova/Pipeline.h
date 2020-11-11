@@ -6,15 +6,17 @@ class Pipeline
 {
     bool repair;
     int ID;
-
-public:    
     double length;
     int diameter;
     static int maxID;
+    static int minID;
+public:    
     Pipeline();
 
     int GetID() const;
-    int GetRepairStatus() const;
+    static int GetmaxID();
+    static int GetminID();
+    bool GetRepairStatus() const;
     friend void ChangeStatus(Pipeline& newpipe);
     friend std::istream& operator >> (std::istream& in, Pipeline& newpipe);
     friend std::ostream& operator << (std::ostream& out, const Pipeline& newpipe);

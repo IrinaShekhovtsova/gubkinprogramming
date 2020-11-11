@@ -1,8 +1,10 @@
 #include "CompressorStation.h"
 
 int CompressorStation::maxID = 2000;
+int CompressorStation::minID = 2000;
 CompressorStation::CompressorStation()
 {
+    minID = 2001;
     ID = ++maxID;
     Name = "NULL";
     shops = 0;
@@ -18,6 +20,26 @@ int CompressorStation::GetID() const
 int CompressorStation::GetShopsWorking() const
 {
     return shops_working;
+}
+
+int CompressorStation::GetShops() const
+{
+    return shops;
+}
+
+std::string CompressorStation::GetName() const
+{
+    return Name;
+}
+
+int CompressorStation::GetmaxID()
+{
+    return maxID;
+}
+
+int CompressorStation::GetminID()
+{
+    return minID;
 }
 
 std::istream& operator>>(std::istream& in, CompressorStation& newstation)

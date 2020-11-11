@@ -13,12 +13,12 @@ template <class T>
 void DeleteObject(vector <T>& array)
 {
     cout << "Enter ID: ";
-    int ID = CheckInt(1001, T::maxID);
+    int ID = CheckInt(T::GetminID(), T::GetmaxID());
     unsigned int index = 0;
     bool ID_exist = false;
     for (auto& object : array)
     {
-        if (object.T::GetID() == ID) {
+        if (object.GetID() == ID) {
             ID_exist = true;
             array.erase(array.begin() + index);
         }
@@ -27,21 +27,14 @@ void DeleteObject(vector <T>& array)
     if (ID_exist == false) cout << "There is no object with ID " << ID << endl;
 }
 template <class T>
-T& SelectObject(vector <T>& array)
-{
-    cout << "Enter index: ";
-    unsigned int index = CheckInt(1,array.size());
-    return array[index-1];
-}
-template <class T>
 T& SelectObjectbyID(vector <T>& array)
 {
     cout << "Enter ID: ";
-    unsigned int ID = CheckInt(1001, T::maxID);
+    int ID = CheckInt(T::GetminID(), T::GetmaxID());
     unsigned int index = 0;
     for (auto& object : array)
     {
-        if (object.T::GetID() == ID) return array[index];
+        if (object.GetID() == ID) return array[index];
         ++index;
     }
 }
@@ -49,7 +42,7 @@ template <class T, class T_class>
 using Filter = bool(*)(const T_class& station, T argument);
 bool CheckbyID(const Pipeline& pipe, int argument)
 {
-    return pipe.Pipeline::GetID() == argument;
+    return pipe.GetID() == argument;
 }
 bool CheckbyRepair(const Pipeline& pipe, bool argument)
 {
@@ -57,12 +50,12 @@ bool CheckbyRepair(const Pipeline& pipe, bool argument)
 }
 bool CheckbyName(const CompressorStation& station, string argument)
 {
-    return station.Name == argument;
+    return station.GetName() == argument;
 }
 bool CheckbyPercentage(const CompressorStation& station, double argument)
 {
-    double percentage_unutilised_shops = 100*(1 - station.GetShopsWorking() / (double) station.shops);
-    return (abs(percentage_unutilised_shops-argument) < 0.001);
+    double percentage_unutilised_shops = 100*(1 - station.GetShopsWorking() / (double) station.GetShops());
+    return abs(percentage_unutilised_shops-argument) < 0.001;
 }
 template <class T, class T_class>
 vector <int> FindbyFilter(const vector <T_class>& array, Filter<T, T_class> f, T argument)
@@ -197,7 +190,7 @@ int main()
         case 7:
         {
             if (stations.size() != 0)
-                EditStation(SelectObject(stations));
+                EditStation(SelectObjectbyID(stations));
             else cout << "There aren't any added stations" << endl;
             break;
         }
@@ -215,7 +208,7 @@ int main()
                 {
                     pipes_for_editing.resize(0);
                     cout << "Enter ID: ";
-                    int ID = CheckInt(1001, Pipeline::maxID);
+                    int ID = CheckInt(Pipeline::GetminID(), Pipeline::GetmaxID());
                     for (int& index : FindbyFilter(pipes, CheckbyID, ID))
                     {
                         cout << pipes[index];
@@ -297,7 +290,6 @@ int main()
                     if (pipes_for_editing.size() != 0)
                     {
                         for (int& index : pipes_for_editing)
-                            //  ChangeStatus(pipes[index].repair);
                             ChangeStatus(pipes[index]);
                     }
                     else cout << "There aren't any pipes for editing" << endl;
