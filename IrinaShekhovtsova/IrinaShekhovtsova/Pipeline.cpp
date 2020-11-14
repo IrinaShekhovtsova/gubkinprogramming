@@ -1,11 +1,11 @@
 #include "Pipeline.h"
 #include "utils.h"
 
-int Pipeline::maxID = 1000;
-int Pipeline::minID = 1000;
+int Pipeline::maxID = 100000;
+int Pipeline::minID = 100000;
 Pipeline::Pipeline()
 {
-	minID = 1001;
+	minID = 100001;
 	ID = ++maxID;
 	length = 0;
 	diameter = 0;

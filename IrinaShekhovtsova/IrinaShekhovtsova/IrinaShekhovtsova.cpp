@@ -4,9 +4,9 @@
 #include <fstream>
 #include <string> 
 #include <vector>
+#include "utils.h"
 #include "Pipeline.h"
 #include "CompressorStation.h"
-#include "utils.h"
 using namespace std;
 
 template <class T>
@@ -15,16 +15,15 @@ void DeleteObject(vector <T>& array)
     cout << "Enter ID: ";
     int ID = CheckInt(T::GetminID(), T::GetmaxID());
     unsigned int index = 0;
-    bool ID_exist = false;
     for (auto& object : array)
     {
         if (object.GetID() == ID) {
-            ID_exist = true;
             array.erase(array.begin() + index);
+            return;
         }
         ++index;
     }
-    if (ID_exist == false) cout << "There is no object with ID " << ID << endl;
+    cout << "There is no object with ID " << ID << endl;
 }
 template <class T>
 T& SelectObjectbyID(vector <T>& array)

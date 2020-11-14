@@ -1,10 +1,10 @@
 #include "CompressorStation.h"
 
-int CompressorStation::maxID = 2000;
-int CompressorStation::minID = 2000;
+int CompressorStation::maxID = 200000;
+int CompressorStation::minID = 200000;
 CompressorStation::CompressorStation()
 {
-    minID = 2001;
+    minID = 200001;
     ID = ++maxID;
     Name = "NULL";
     shops = 0;
