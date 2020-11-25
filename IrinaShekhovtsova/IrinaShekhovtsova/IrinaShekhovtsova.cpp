@@ -4,38 +4,19 @@
 #include <fstream>
 #include <string> 
 #include <vector>
+#include <unordered_map>
 #include "utils.h"
 #include "Pipeline.h"
 #include "CompressorStation.h"
 using namespace std;
 
 template <class T>
-void DeleteObject(vector <T>& array)
+void DeleteObject(unordered_map <int,T>& pairs)
 {
     cout << "Enter ID: ";
     int ID = CheckInt(T::GetminID(), T::GetmaxID());
-    unsigned int index = 0;
-    for (auto& object : array)
-    {
-        if (object.GetID() == ID) {
-            array.erase(array.begin() + index);
-            return;
-        }
-        ++index;
-    }
-    cout << "There is no object with ID " << ID << endl;
-}
-template <class T>
-T& SelectObjectbyID(vector <T>& array)
-{
-    cout << "Enter ID: ";
-    int ID = CheckInt(T::GetminID(), T::GetmaxID());
-    unsigned int index = 0;
-    for (auto& object : array)
-    {
-        if (object.GetID() == ID) return array[index];
-        ++index;
-    }
+    if (pairs.count(ID) == 1) pairs.erase(ID);
+    else cout << "There is no object with ID " << ID << endl;
 }
 template <class T, class T_class>
 using Filter = bool(*)(const T_class& station, T argument);
@@ -57,14 +38,11 @@ bool CheckbyPercentage(const CompressorStation& station, double argument)
     return abs(percentage_unutilised_shops-argument) < 0.001;
 }
 template <class T, class T_class>
-vector <int> FindbyFilter(const vector <T_class>& array, Filter<T, T_class> f, T argument)
+vector <int> FindbyFilter(const unordered_map <int,T_class>& pairs, Filter<T, T_class> f, T argument)
 {
     vector <int> res;
-    int i = 0;
-    for (auto& object : array) {
-        if (f(object, argument)) res.push_back(i);
-        i++;
-    }
+    for (auto& pair : pairs) 
+        if (f(pair.second, argument)) res.push_back(pair.first);
     return res;
 }
 void PrintMenu()
@@ -90,8 +68,8 @@ void PrintOption(string option1, string option2)
 }
 int main()
 {
-    vector <Pipeline> pipes;
-    vector <CompressorStation> stations;
+    unordered_map <int, Pipeline> pipes;
+    unordered_map <int, CompressorStation> stations;
     vector <int> pipes_for_editing;
     while (true)
     {
@@ -103,21 +81,21 @@ int main()
         {
             Pipeline pipe;
             cin >> pipe;
-            pipes.push_back(pipe);
+            pipes[pipe.GetID()] = pipe;
             break;
         }
         case 2: 
         {
             if (pipes.size() != 0)
             {
-                for (const auto& pipe : pipes)
-                    cout << pipe;
+                for (const auto& pair : pipes)
+                    cout << pair.second;
             }
             else cout << "There aren't any added pipes" << endl;
             if (stations.size() != 0)
             {
-                for (const auto& station : stations)
-                    cout << station;
+                for (const auto& pair : stations)
+                    cout << pair.second;
             }
             else cout << "There aren't any added stations" << endl;
             break; 
@@ -133,11 +111,11 @@ int main()
             if (fout.is_open())
             {
                 fout << pipes.size() << endl;
-                for (const auto& pipe : pipes)
-                    fout << pipe;
+                for (const auto& pair : pipes)
+                    fout << pair.second;
                 fout << stations.size() << endl;
-                for (const auto& station : stations)
-                    fout << station;
+                for (const auto& pair : stations)
+                    fout << pair.second;
                 fout.close();
             }
             else cout << "Opening the file for writing failed" << endl;
@@ -155,19 +133,17 @@ int main()
             {
                 int count;
                 fin >> count;
-                pipes.reserve(count);
                 while (count--) {
                     Pipeline pipe;
                     fin >> pipe;
-                    pipes.push_back(pipe);
+                    pipes[pipe.GetID()] = pipe;
                 }
 
-                fin >> count;
-                stations.reserve(count);  
+                fin >> count; 
                 while (count--) {
                     CompressorStation station;
                     fin >> station;
-                    stations.push_back(station);
+                    stations[station.GetID()] = station;
                 }
                 fin.close();
             }
@@ -183,13 +159,15 @@ int main()
         {
             CompressorStation station;
             cin >> station;
-            stations.push_back(station);
+            stations[station.GetID()] = station;
             break;
         }
         case 7:
         {
+            cout << "Enter ID: ";
+            int ID = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
             if (stations.size() != 0)
-                EditStation(SelectObjectbyID(stations));
+                if (stations.count(ID) == 1) EditStation(stations[ID]); else cout << "There is no station with ID " << ID << endl;
             else cout << "There aren't any added stations" << endl;
             break;
         }
@@ -208,10 +186,10 @@ int main()
                     pipes_for_editing.resize(0);
                     cout << "Enter ID: ";
                     int ID = CheckInt(Pipeline::GetminID(), Pipeline::GetmaxID());
-                    for (int& index : FindbyFilter(pipes, CheckbyID, ID))
+                    for (int& ID : FindbyFilter(pipes, CheckbyID, ID))
                     {
-                        cout << pipes[index];
-                        pipes_for_editing.push_back(index);
+                        cout << pipes[ID];
+                        pipes_for_editing.push_back(ID);
                     }
                     break;
                 }
@@ -221,10 +199,10 @@ int main()
                     cout << "Type 0 or 1 [In repair - 1, not in repair - 0]: ";
                     cin >> argument;
                     pipes_for_editing.resize(0);
-                    for (int& index : FindbyFilter(pipes, CheckbyRepair, argument))
+                    for (int& ID : FindbyFilter(pipes, CheckbyRepair, argument))
                     {
-                        cout << pipes[index];
-                        pipes_for_editing.push_back(index);
+                        cout << pipes[ID];
+                        pipes_for_editing.push_back(ID);
                     }
                     break;
                 }
@@ -253,16 +231,16 @@ int main()
                     cout << "Enter name: ";
                     string name;
                     cin >> name;
-                    for (int& index : FindbyFilter(stations, CheckbyName, name))
-                        cout << stations[index];
+                    for (int& ID : FindbyFilter(stations, CheckbyName, name))
+                        cout << stations[ID];
                     break;
                 }
                 case 2:
                 {
                     cout << "Enter percentage (0-100): ";
                     double percentage = CheckDouble(0, 100);
-                    for (int& index : FindbyFilter(stations, CheckbyPercentage, percentage))
-                        cout << stations[index];
+                    for (int& ID : FindbyFilter(stations, CheckbyPercentage, percentage))
+                        cout << stations[ID];
                     break;
                 }
                 case 0:
@@ -288,8 +266,8 @@ int main()
                 {
                     if (pipes_for_editing.size() != 0)
                     {
-                        for (int& index : pipes_for_editing)
-                            ChangeStatus(pipes[index]);
+                        for (int& ID : pipes_for_editing)
+                            if (pipes.count(ID) == 1) ChangeStatus(pipes[ID]);
                     }
                     else cout << "There aren't any pipes for editing" << endl;
                     break;
@@ -301,7 +279,9 @@ int main()
                         cout << "Type amount of pipes to edit: ";
                         int n = CheckInt(1, pipes.size());
                         for (int i = 0; i < n; ++i)
-                            ChangeStatus(SelectObjectbyID(pipes));
+                            cout << "Enter ID: ";
+                        int ID = CheckInt(Pipeline::GetminID(), Pipeline::GetmaxID());
+                        if (pipes.count(ID) == 1) ChangeStatus(pipes[ID]);
                     }
                     else cout << "There aren't any added pipes" << endl;
                     break;

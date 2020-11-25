@@ -20,7 +20,7 @@ public:
     friend void ChangeStatus(Pipeline& newpipe);
     friend std::istream& operator >> (std::istream& in, Pipeline& newpipe);
     friend std::ostream& operator << (std::ostream& out, const Pipeline& newpipe);
-    friend std::ifstream& operator>>(std::ifstream& in, Pipeline& newpipe);
+    friend std::ifstream& operator>>(std::ifstream& fin, Pipeline& newpipe);
     friend std::ofstream& operator<<(std::ofstream& fout, const Pipeline& newpipe);
 };
 

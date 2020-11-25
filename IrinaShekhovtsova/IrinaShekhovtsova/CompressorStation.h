@@ -22,10 +22,11 @@ public:
     std::string GetName() const;
     static int GetmaxID();
     static int GetminID();
+    friend void EditStation(CompressorStation& newstation);
     friend std::istream& operator >> (std::istream& in, CompressorStation& newstation);
     friend std::ostream& operator << (std::ostream& out, const CompressorStation& newstation);
-    friend std::ifstream& operator>>(std::ifstream& in, CompressorStation& newstation);
+    friend std::ifstream& operator>>(std::ifstream& fin, CompressorStation& newstation);
     friend std::ofstream& operator<<(std::ofstream& fout, const CompressorStation& newstation);
-    friend void EditStation(CompressorStation& newstation);
+
 };
 
