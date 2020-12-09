@@ -10,7 +10,9 @@ class Pipeline
     int diameter;
     static int maxID;
     static int minID;
-public:    
+public:   
+    int in;
+    int out;
     Pipeline();
 
     int GetID() const;

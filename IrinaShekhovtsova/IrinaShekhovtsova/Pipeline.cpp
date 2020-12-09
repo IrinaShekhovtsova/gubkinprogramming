@@ -1,15 +1,17 @@
 #include "Pipeline.h"
 #include "utils.h"
 
-int Pipeline::maxID = 100000;
-int Pipeline::minID = 100000;
+int Pipeline::maxID = 0;
+int Pipeline::minID = 0;
 Pipeline::Pipeline()
 {
-	minID = 100001;
+	minID = 1;
 	ID = ++maxID;
 	length = 0;
 	diameter = 0;
 	repair = false;
+	in = -1;
+	out = -1;
 }
 int Pipeline::GetID() const
 {

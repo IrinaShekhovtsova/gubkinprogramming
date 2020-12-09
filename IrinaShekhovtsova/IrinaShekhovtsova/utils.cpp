@@ -21,3 +21,13 @@ double CheckDouble(double min, double max)
     }
     return x;
 }
+int SelectbyID(std::vector<int> vector, int ID_search)
+{
+    int j = 0;
+    for(const auto& ID: vector)
+    { 
+        if (ID == ID_search) return j;
+        else j++;
+    }
+        
+}
