@@ -100,6 +100,8 @@ void PrintMenu()
         << "12. Input gas transportation network" << endl
         << "13. View gas transportation network" << endl
         << "14. Topological sort" << endl
+        << "15. The shortest route" << endl
+        << "16. The max flow" << endl
         << "0. Exit" << endl;
 }
 void PrintOption(string option1, string option2)
@@ -117,7 +119,7 @@ int main()
     while (true)
     {
         PrintMenu();
-        int i = CheckInt(0, 14);
+        int i = CheckInt(0, 16);
         switch (i)
         {
         case 1:
@@ -350,7 +352,7 @@ int main()
                 for (auto& pair : pipes)
                 {
                     if (pair.second.in == ID) pair.second.in = -1;
-                    if (pair.second.out == ID) pair.second.out = 1;
+                    if (pair.second.out == ID) pair.second.out = -1;
                 }
             }
             else cout << "There aren't any added compressor stations" << endl;
@@ -369,6 +371,7 @@ int main()
                     int ID = CheckInt(Pipeline::GetminID(), Pipeline::GetmaxID());
                     pipes[ID].in = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
                     pipes[ID].out = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
+                    //in out
                     cout << "Would you like to continue? [Yes-1, No-0]: ";
                     input = CheckInt(0, 1);
                 }
@@ -394,6 +397,37 @@ int main()
                 vector<int> Station_Connection;
                 vector<vector<int>> graph = Net.AdjencyMatrix(pipes, Station_Connection);
                 Net.topological_sort(Station_Connection.size(), graph, Station_Connection);
+            }
+            else cout << "There is no gas transportation network" << endl;
+            break;
+        }
+        case 15:
+        {
+            if (Net.Active) {
+                vector<int> Station_Connection;
+                vector<vector<int>> graph = Net.AdjencyMatrix(pipes, Station_Connection);
+                cout << "Type the start ID: ";
+                int start = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
+                cout << "Type the end ID: ";
+                int finish = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
+                Net.Floyd(start, finish, graph, Station_Connection);
+            }
+            else cout << "There is no gas transportation network" << endl;
+            break;
+        }
+        case 16:
+        {
+            if (Net.Active) {
+                vector<int> Station_Connection;
+                vector<vector<int>> graph = Net.AdjencyList(pipes, Station_Connection);
+                vector<vector<int>> capacity = Net.PerformanceMatrix(pipes, Station_Connection);
+                Net.ViewNetwork(capacity, Station_Connection);
+                cout << "Type the start ID: ";
+                int start = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
+                cout << "Type the end ID: ";
+                int finish = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
+                int max_flow = Net.MaxFlow(start,finish,graph,capacity,Station_Connection);
+                cout << max_flow << endl;
             }
             else cout << "There is no gas transportation network" << endl;
             break;

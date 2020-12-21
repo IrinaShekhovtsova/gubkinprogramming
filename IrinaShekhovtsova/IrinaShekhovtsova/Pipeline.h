@@ -19,6 +19,8 @@ public:
     static int GetmaxID();
     static int GetminID();
     bool GetRepairStatus() const;
+    int GetWeight() const;
+    int GetPerformance() const;
     friend void ChangeStatus(Pipeline& newpipe);
     friend std::istream& operator >> (std::istream& in, Pipeline& newpipe);
     friend std::ostream& operator << (std::ostream& out, const Pipeline& newpipe);

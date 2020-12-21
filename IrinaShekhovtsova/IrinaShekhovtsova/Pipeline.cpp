@@ -1,5 +1,6 @@
 #include "Pipeline.h"
 #include "utils.h"
+#include <math.h>
 
 int Pipeline::maxID = 0;
 int Pipeline::minID = 0;
@@ -31,6 +32,16 @@ int Pipeline::GetminID()
 bool Pipeline::GetRepairStatus() const
 {
 	return repair;
+}
+
+int Pipeline::GetWeight() const
+{
+	return length;
+}
+
+int Pipeline::GetPerformance() const
+{
+	return round(sqrt(pow(diameter,5)/length));
 }
 
 void ChangeStatus(Pipeline& newpipe)
