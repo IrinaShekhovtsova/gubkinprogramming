@@ -14,28 +14,22 @@ std::vector<std::vector<int>> Network::AdjencyMatrix(std::unordered_map <int,Pip
     std::set <int> Graph_Pipes;
     std::set <int> Graph_Stations;
     for (const auto& pair : pipes)
-        if (pair.second.in != -1 && pair.second.out != -1)
+        if (pair.second.in != -1 && pair.second.out != -1 && !pair.second.GetRepairStatus())
         {
             Graph_Pipes.insert(pair.first);
             Graph_Stations.insert(pair.second.in);
             Graph_Stations.insert(pair.second.out);
         }
-    std::set <int> ::iterator it1 = Graph_Pipes.begin();
-    std::set <int> ::iterator it2 = Graph_Stations.begin();
-    for (unsigned int i = 0; i < Graph_Stations.size(); i++)
-    {
-        Station_Connection.push_back(*it2);
-        it2++;
-    }
+    for(auto elem:Graph_Stations)
+        Station_Connection.push_back(elem);
     std::vector <std::vector <int>> graph(Station_Connection.size(), std::vector <int>(Station_Connection.size()));
-    for (unsigned int i = 0; i < Graph_Pipes.size(); i++) //auto
+    for(auto elem: Graph_Pipes)
     {
-        int ID_in = pipes[*it1].in;
-        int ID_out = pipes[*it1].out;
+        int ID_in = pipes[elem].in;
+        int ID_out = pipes[elem].out;
         int ind_in = SelectbyID(Station_Connection, ID_in);
         int ind_out = SelectbyID(Station_Connection, ID_out);
-        graph[ind_in][ind_out] = pipes[*it1].GetWeight();
-        it1++;
+        graph[ind_in][ind_out] = pipes[elem].GetWeight();
     }
     return graph;
 }
@@ -113,7 +107,7 @@ void Network::Floyd(int start, int finish, const std::vector<std::vector<int>>& 
                 if (f[i][j] < INF) prev[i][j] = i;
             }
             else {
-                f[i][j] = INF; //если труба в ремонте?
+                f[i][j] = INF; 
                 prev[i][j] = -1;
             }
         }
@@ -125,6 +119,10 @@ void Network::Floyd(int start, int finish, const std::vector<std::vector<int>>& 
                     f[i][j] = f[i][k] + f[k][j];
                     prev[i][j] = prev[k][j];
                 }
+    for (int i = 0; i < Station_Connection.size(); i++)
+        for (int j = 0; j < Station_Connection.size(); j++)
+            if (i == j) prev[i][j] = -1;
+
     std::vector <int> path;
     int vertex_start = SelectbyID(Station_Connection, start);
     int vertex_finish = SelectbyID(Station_Connection, finish);
@@ -138,9 +136,11 @@ void Network::Floyd(int start, int finish, const std::vector<std::vector<int>>& 
     }
     reverse(path.begin(), path.end());
     if (path_found) {
+        std::cout << "The path: ";
         for (auto vertex : path)
             std::cout << Station_Connection[vertex] << " ";
         std::cout << std::endl;
+        std::cout << "The length: " << f[vertex_start][vertex_finish] << std::endl;
     }
     else std::cout << "There is no route" << std::endl;
 }
@@ -150,62 +150,49 @@ std::vector<std::vector<int>> Network::AdjencyList(std::unordered_map <int, Pipe
     std::set <int> Graph_Pipes;
     std::set <int> Graph_Stations;
     for (const auto& pair : pipes)
-        if (pair.second.in != -1 && pair.second.out != -1)
+        if (pair.second.in != -1 && pair.second.out != -1 && !pair.second.GetRepairStatus())
         {
             Graph_Pipes.insert(pair.first);
             Graph_Stations.insert(pair.second.in);
             Graph_Stations.insert(pair.second.out);
         }
-    std::set <int> ::iterator it1 = Graph_Pipes.begin();
-    std::set <int> ::iterator it2 = Graph_Stations.begin();
-    //for (unsigned int i = 0; i < Graph_Stations.size(); i++)
     for(auto elem: Graph_Stations)
-    {
-        Station_Connection.push_back(*it2);
-        it2++;
-    }
+        Station_Connection.push_back(elem);
     std::vector <std::vector <int>> adj_list(Station_Connection.size(), std::vector <int>(Station_Connection.size()));
-    //for (unsigned int i = 0; i < Graph_Pipes.size(); i++) //auto
     for(auto elem: Graph_Pipes)
     {
-        int ID_in = pipes[*it1].in;
-        int ID_out = pipes[*it1].out;
+        int ID_in = pipes[elem].in;
+        int ID_out = pipes[elem].out;
         int ind_in = SelectbyID(Station_Connection, ID_in);
         int ind_out = SelectbyID(Station_Connection, ID_out);
         adj_list[ind_in].push_back(ind_out);
         adj_list[ind_out].push_back(ind_in);
-        it1++;
     }
     return adj_list;
 }
 
 std::vector<std::vector<int>> Network::PerformanceMatrix(std::unordered_map <int, Pipeline> pipes, std::vector<int>& Station_Connection)
 {
+    Station_Connection.clear();
     std::set <int> Graph_Pipes;
     std::set <int> Graph_Stations;
     for (const auto& pair : pipes)
-        if (pair.second.in != -1 && pair.second.out != -1)
+        if (pair.second.in != -1 && pair.second.out != -1 && !pair.second.GetRepairStatus())
         {
             Graph_Pipes.insert(pair.first);
             Graph_Stations.insert(pair.second.in);
             Graph_Stations.insert(pair.second.out);
         }
-    std::set <int> ::iterator it1 = Graph_Pipes.begin();
-    std::set <int> ::iterator it2 = Graph_Stations.begin();
     for(auto elem : Graph_Stations)
-    {
-        Station_Connection.push_back(*it2);
-        it2++;
-    }
+        Station_Connection.push_back(elem);
     std::vector <std::vector <int>> perf_graph(Station_Connection.size(), std::vector <int>(Station_Connection.size()));
     for(auto elem : Graph_Pipes)
     {
-        int ID_in = pipes[*it1].in;
-        int ID_out = pipes[*it1].out;
+        int ID_in = pipes[elem].in;
+        int ID_out = pipes[elem].out;
         int ind_in = SelectbyID(Station_Connection, ID_in);
         int ind_out = SelectbyID(Station_Connection, ID_out);
-        perf_graph[ind_in][ind_out] = pipes[*it1].GetPerformance();
-        it1++;
+        perf_graph[ind_in][ind_out] = pipes[elem].GetPerformance();
     }
     return perf_graph;
 }
@@ -237,8 +224,6 @@ int Network::bfs(int start, int finish, std::vector<int>& prev, const std::vecto
 
     return 0;
 }
-
-// prying about flow: https://cp-algorithms.com/graph/edmonds_karp.html 
 
 int Network::MaxFlow(int start, int finish, const std::vector<std::vector<int>>& g, std::vector<std::vector<int>> capacity, const std::vector<int>& Station_Connection)
 {

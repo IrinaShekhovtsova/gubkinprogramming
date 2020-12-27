@@ -6,7 +6,7 @@ class Pipeline
 {
     bool repair;
     int ID;
-    double length;
+    int length;
     int diameter;
     static int maxID;
     static int minID;

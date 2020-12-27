@@ -64,18 +64,20 @@ std::ostream& operator<<(std::ostream& out, const Pipeline& newpipe)
 	out << "The length: " << newpipe.length << "\n";
 	out << "The diametr: " << newpipe.diameter << "\n";
 	(newpipe.repair == false) ? out << "Not in repair\n" : out << "In repair\n";
+	out << "Station IN: " << newpipe.in << "\n";
+	out << "Station OUT: " << newpipe.out << "\n";
 	return out;
 }
 
 std::ifstream& operator>>(std::ifstream& fin, Pipeline& newpipe)
 {
-	fin >> newpipe.length >> newpipe.diameter >> newpipe.repair;
+	fin >> newpipe.length >> newpipe.diameter >> newpipe.repair >> newpipe.in >> newpipe.out;
 	return fin;
 }
 
 std::ofstream& operator<<(std::ofstream& fout, const Pipeline& newpipe)
 {
-	fout << newpipe.length << std::endl << newpipe.diameter << std::endl << newpipe.repair << std::endl;
+	fout << newpipe.length << std::endl << newpipe.diameter << std::endl << newpipe.repair << std::endl << newpipe.in << std::endl << newpipe.out << std::endl;
 	return fout;
 }
 

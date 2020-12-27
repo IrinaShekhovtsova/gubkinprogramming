@@ -168,6 +168,7 @@ int main()
         }
         case 4: 
         {
+            Net.Active = true;
             ifstream fin;
             string name_of_file;
             cout << "Enter the name of file: ";
@@ -324,12 +325,14 @@ int main()
                 {
                     if (pipes.size() != 0)
                     {
-                        cout << "Type amount of pipes to edit: ";
-                        int n = CheckInt(1, pipes.size());
-                        for (int i = 0; i < n; ++i)
+                        bool input = true;
+                        while (input) {
                             cout << "Enter ID: ";
-                        int ID = CheckInt(Pipeline::GetminID(), Pipeline::GetmaxID());
-                        if (pipes.count(ID) == 1) ChangeStatus(pipes[ID]);
+                            int ID = CheckInt(Pipeline::GetminID(), Pipeline::GetmaxID());
+                            if (pipes.count(ID) == 1) ChangeStatus(pipes[ID]);
+                            cout << "Would you like to continue? [1-yes, 0-no]: ";
+                            input = CheckInt(0, 1);
+                        }
                     }
                     else cout << "There aren't any added pipes" << endl;
                     break;
@@ -367,11 +370,14 @@ int main()
                 bool input = true;
                 while (input)
                 {
-                    cout << "Pave the way [Pipe Start CS Finish CS]: ";
-                    int ID = CheckInt(Pipeline::GetminID(), Pipeline::GetmaxID());
-                    pipes[ID].in = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
-                    pipes[ID].out = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
-                    //in out
+                    int ID;
+                    do {
+                        cout << "Pave the way [Pipe Start CS Finish CS]: ";
+                        ID = CheckInt(Pipeline::GetminID(), Pipeline::GetmaxID());
+                        pipes[ID].in = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
+                        pipes[ID].out = CheckInt(CompressorStation::GetminID(), CompressorStation::GetmaxID());
+                    } while (pipes[ID].in == pipes[ID].out);
+                   
                     cout << "Would you like to continue? [Yes-1, No-0]: ";
                     input = CheckInt(0, 1);
                 }
